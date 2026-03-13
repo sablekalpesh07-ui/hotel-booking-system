@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<title>Booking Confirmation</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body class="login-body">
+
+<div class="login-box">
+
+<h2>Booking Confirmed ✅</h2>
+
+<p id="bookingDetails"></p>
+
+<p>Payment Method: <b>Cash on Arrival</b></p>
+
+<a href="index.html">Back to Home</a>
+
+</div>
+
+<script>
+
+
+
+let bookingID = localStorage.getItem("bookingID")
+let name = localStorage.getItem("bookingName")
+let room = localStorage.getItem("bookingRoom")
+let checkin = localStorage.getItem("bookingCheckin")
+let checkout = localStorage.getItem("bookingCheckout")
+
+document.getElementById("bookingDetails").innerText =
+"Booking ID: " + bookingID +
+"\nGuest: " + name +
+"\nRoom: " + room +
+"\nCheck-in: " + checkin +
+"\nCheck-out: " + checkout
+
+
+
+</script>
+<script>
+
+function downloadReceipt(){
+
+const { jsPDF } = window.jspdf
+
+let doc = new jsPDF()
+
+let bookingID = localStorage.getItem("bookingID")
+let name = localStorage.getItem("bookingName")
+let room = localStorage.getItem("bookingRoom")
+let checkin = localStorage.getItem("bookingCheckin")
+let checkout = localStorage.getItem("bookingCheckout")
+
+doc.text("Luxury Hotel Booking Receipt",20,20)
+
+doc.text("Booking ID: " + bookingID,20,40)
+doc.text("Guest Name: " + name,20,50)
+doc.text("Room: " + room,20,60)
+doc.text("Check-in: " + checkin,20,70)
+doc.text("Check-out: " + checkout,20,80)
+doc.text("Payment: Cash on Arrival",20,90)
+
+doc.save("booking_receipt.pdf")
+
+}
+
+</script>
+<button onclick="downloadReceipt()">Download Receipt</button>
+</body>
+
+</html>

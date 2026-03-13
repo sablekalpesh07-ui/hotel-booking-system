@@ -6,20 +6,23 @@ const path = require("path")
 
 const app = express()
 
+/* Middleware */
 app.use(cors())
 app.use(express.json())
 
+/* Serve frontend files */
 app.use(express.static(__dirname))
 
 app.get("/", (req,res)=>{
 res.sendFile(path.join(__dirname,"index.html"))
 })
 
+/* MongoDB connection */
 mongoose.connect("mongodb+srv://sablekalpesh07_db_user:o1jyzlCqAIMiq9mj@cluster0.nlntkfe.mongodb.net/hotelDB")
-
-.then(()=>console.log("MongoDB connected"))
+.then(()=>console.log("MongoDB Connected"))
 .catch(err=>console.log(err))
 
+/* User Schema */
 const UserSchema = new mongoose.Schema({
 name:String,
 email:String,
@@ -28,6 +31,7 @@ password:String
 
 const User = mongoose.model("User",UserSchema)
 
+/* Booking Schema */
 const BookingSchema = new mongoose.Schema({
 name:String,
 email:String,
@@ -39,25 +43,35 @@ payment:String
 
 const Booking = mongoose.model("Booking",BookingSchema)
 
+/* Signup API */
 app.post("/signup", async (req,res)=>{
+
+try{
 
 const {name,email,password} = req.body
 
-const hashed = await bcrypt.hash(password,10)
+const hashedPassword = await bcrypt.hash(password,10)
 
 const user = new User({
 name,
 email,
-password:hashed
+password:hashedPassword
 })
 
 await user.save()
 
-res.json("User registered")
+res.json("User Registered Successfully")
+
+}catch(err){
+res.json("Signup Error")
+}
 
 })
 
+/* Login API */
 app.post("/login", async (req,res)=>{
+
+try{
 
 const {email,password} = req.body
 
@@ -67,16 +81,21 @@ if(!user){
 return res.json("User not found")
 }
 
-const valid = await bcrypt.compare(password,user.password)
+const validPassword = await bcrypt.compare(password,user.password)
 
-if(valid){
-res.json("Login success")
+if(validPassword){
+res.json("Login Successful")
 }else{
-res.json("Wrong password")
+res.json("Invalid Password")
+}
+
+}catch(err){
+res.json("Login Error")
 }
 
 })
 
+/* Booking API */
 app.post("/book-room", async (req,res)=>{
 
 const {name,email,room,checkin,checkout,payment} = req.body
@@ -92,20 +111,22 @@ payment
 
 await booking.save()
 
-res.json("Room booked")
+res.json("Room booked successfully")
 
 })
 
+/* Admin API */
 app.get("/bookings", async (req,res)=>{
 
-const bookings = await Booking.find()
+let bookings = await Booking.find()
 
 res.json(bookings)
 
 })
 
+/* Start server */
 const PORT = process.env.PORT || 5000
 
 app.listen(PORT,()=>{
-console.log("Server running on",PORT)
-})/ Server.js file content goes here
+console.log("Server running on port",PORT)
+})

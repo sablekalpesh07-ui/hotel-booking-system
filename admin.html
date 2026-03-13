@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Admin Dashboard</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<h2>Hotel Bookings</h2>
+
+<table border="1" width="80%" id="bookingTable">
+    <th>Payment</th>
+<tr>
+<th>Name</th>
+<th>Email</th>
+<th>Room</th>
+<th>Check In</th>
+<th>Check Out</th>
+</tr>
+</table>
+
+<script>
+
+async function loadBookings(){
+
+let response = await fetch("http://localhost:5000/bookings")
+
+let bookings = await response.json()
+
+let table = document.getElementById("bookingTable")
+
+bookings.forEach(b => {
+
+let row = table.insertRow()
+
+row.insertCell(0).innerText = b.name
+row.insertCell(1).innerText = b.email
+row.insertCell(2).innerText = b.room
+row.insertCell(3).innerText = b.checkin
+row.insertCell(4).innerText = b.checkout
+
+})
+
+}
+
+loadBookings()
+
+</script>
+
+</body>
+</html>
