@@ -35,20 +35,16 @@ let name = document.getElementById("name").value
 let email = document.getElementById("email").value
 let password = document.getElementById("password").value
 
-let response = await fetch("http://localhost:5000/signup",{
-
+let response = await fetch("https://hotel-booking-system-u6w2.onrender.com/signup",{
 method:"POST",
-
 headers:{
 "Content-Type":"application/json"
 },
-
 body:JSON.stringify({
-name,
-email,
-password
+name:name,
+email:email,
+password:password
 })
-
 })
 
 let data = await response.json()
@@ -56,6 +52,9 @@ let data = await response.json()
 alert(data)
 
 }
+
+
+
 
 </script>
 
