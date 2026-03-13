@@ -62,34 +62,20 @@ async function login(){
 let email = document.getElementById("email").value
 let password = document.getElementById("password").value
 
-let response = await fetch("http://localhost:5000/login",{
-
+let response = await fetch("https://hotel-booking-system-u6w2.onrender.com/login",{
 method:"POST",
-
 headers:{
 "Content-Type":"application/json"
 },
-
 body:JSON.stringify({
-email,
-password
+email:email,
+password:password
 })
-
 })
 
 let data = await response.json()
 
-if(data === "Login Successful"){
-
-alert("Login Successful")
-
-window.location.href = "index.html"
-
-}else{
-
 alert(data)
-
-}
 
 }
 
