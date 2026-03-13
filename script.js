@@ -1,143 +1,84 @@
-/* Smooth scroll to booking */
+const API = "https://hotel-booking-system-u6w2.onrender.com"
 
-function scrollBooking(){
-document.getElementById("booking").scrollIntoView({
-behavior:"smooth"
-})
-}
+/* ================= LOGIN ================= */
 
-
-/* Login system */
-
-const form = document.getElementById("loginForm")
-
-if(form){
-
-form.addEventListener("submit",function(e){
-
-e.preventDefault()
+async function login(){
 
 let email = document.getElementById("email").value
 let password = document.getElementById("password").value
-let msg = document.getElementById("msg")
 
-if(email === "admin@hotel.com" && password === "1234"){
+try{
 
-msg.style.color = "green"
-msg.innerText = "Login Successful"
-
-}else{
-
-msg.style.color = "red"
-msg.innerText = "Invalid Login"
-
-}
-
+let response = await fetch(API + "/login",{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify({
+email:email,
+password:password
+})
 })
 
+let data = await response.json()
+
+alert(data)
+
+if(data === "Login Successful"){
+window.location.href="index.html"
 }
 
-
-/* Image popup */
-
-function openImage(img){
-
-let popup = document.getElementById("imagePopup")
-let popupImg = document.getElementById("popupImg")
-
-popup.style.display = "flex"
-popupImg.src = img.src
-
-}
-
-function closeImage(){
-document.getElementById("imagePopup").style.display = "none"
-}
-
-
-/* Room slider */
-
-let slideIndex = 0
-const slides = document.querySelector(".slides")
-
-if(slides){
-
-function showSlide(){
-slides.style.transform = "translateX(" + (-slideIndex * 100) + "%)"
-}
-
-function nextSlide(){
-
-if(slideIndex < 4){
-slideIndex++
-}else{
-slideIndex = 0
-}
-
-showSlide()
-}
-
-function prevSlide(){
-
-if(slideIndex > 0){
-slideIndex--
-}else{
-slideIndex = 4
-}
-
-showSlide()
-}
-
-setInterval(nextSlide,4000)
-
-}
-
-
-/* Navbar scroll effect */
-
-window.addEventListener("scroll",function(){
-
-let navbar = document.getElementById("navbar")
-
-if(navbar){
-
-if(window.scrollY > 50){
-navbar.classList.add("scrolled")
-}else{
-navbar.classList.remove("scrolled")
+}catch(err){
+alert("Server error")
 }
 
 }
 
+
+/* ================= SIGNUP ================= */
+
+async function signup(){
+
+let name = document.getElementById("name").value
+let email = document.getElementById("email").value
+let password = document.getElementById("password").value
+
+try{
+
+let response = await fetch(API + "/signup",{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify({
+name:name,
+email:email,
+password:password
+})
 })
 
+let data = await response.json()
 
-/* Mobile menu */
+alert(data)
 
-function toggleMenu(){
-document.getElementById("navMenu").classList.toggle("active")
+if(data === "User Registered Successfully"){
+window.location.href="login.html"
+}
+
+}catch(err){
+alert("Server error")
+}
+
 }
 
 
-/* Room prices */
+/* ================= PRICE CALCULATION ================= */
 
 const roomPrices = {
 deluxe:3500,
 suite:6000,
 presidential:12000
 }
-
-
-/* Room availability */
-
-const roomsAvailable = {
-deluxe:3,
-suite:2,
-presidential:1
-}
-
-
-/* Price calculation */
 
 function calculatePrice(){
 
@@ -147,25 +88,24 @@ let room = document.getElementById("roomType").value
 
 let price = roomPrices[room]
 
-let nights = (checkout - checkin) / (1000*60*60*24)
+let nights = (checkout - checkin)/(1000*60*60*24)
 
 if(nights <= 0){
-
 document.getElementById("totalPrice").innerText =
 "Check-out must be after check-in"
-
 return
 }
 
 let total = nights * price
 
 document.getElementById("totalPrice").innerText =
-"Total Price: " + total + " for " + nights + " nights"
+"Total Price: ₹" + total + " for " + nights + " nights"
 
 }
 
 
-/* Booking */
+/* ================= BOOK ROOM ================= */
+
 async function bookRoom(){
 
 let name = document.getElementById("name").value
@@ -174,17 +114,19 @@ let room = document.getElementById("roomType").value
 let checkin = document.getElementById("checkin").value
 let checkout = document.getElementById("checkout").value
 
-let response = await fetch("https://hotel-booking-system-u6w2.onrender.com/book-room",{
+try{
+
+let response = await fetch(API + "/book-room",{
 method:"POST",
 headers:{
 "Content-Type":"application/json"
 },
 body:JSON.stringify({
-name,
-email,
-room,
-checkin,
-checkout,
+name:name,
+email:email,
+room:room,
+checkin:checkin,
+checkout:checkout,
 payment:"Cash"
 })
 })
@@ -193,116 +135,48 @@ let data = await response.json()
 
 alert(data)
 
-}
-function payNow(){
-
-alert("Payment Successful! Your room is booked.")
-
+}catch(err){
+alert("Booking failed")
 }
 
-async function confirmBooking(){
+}
 
-let name = document.getElementById("name").value
-let email = document.getElementById("email").value
-let checkin = document.getElementById("checkin").value
-let checkout = document.getElementById("checkout").value
-let room = document.getElementById("roomType").value
 
-/* Generate booking ID */
+/* ================= ADMIN BOOKINGS ================= */
 
-let bookingID = "HOTEL" + Math.floor(Math.random()*100000)
+async function loadBookings(){
 
-/* Save data in local storage */
+let response = await fetch(API + "/bookings")
+let bookings = await response.json()
 
-localStorage.setItem("bookingID", bookingID)
-localStorage.setItem("bookingName", name)
-localStorage.setItem("bookingRoom", room)
-localStorage.setItem("bookingCheckin", checkin)
-localStorage.setItem("bookingCheckout", checkout)
+let table = document.getElementById("bookingTable")
 
-await fetch("https://hotel-booking-system-u6w2.onrender.com/book-room",{
+if(!table) return
 
-method:"POST",
+table.innerHTML=""
 
-headers:{
-"Content-Type":"application/json"
-},
+bookings.forEach(b=>{
 
-body:JSON.stringify({
-name,
-email,
-room,
-checkin,
-checkout,
-payment:"Cash on Arrival",
-bookingID
-})
+table.innerHTML += `
+<tr>
+<td>${b.name}</td>
+<td>${b.email}</td>
+<td>${b.room}</td>
+<td>${b.checkin}</td>
+<td>${b.checkout}</td>
+<td>${b.payment}</td>
+</tr>
+`
 
 })
 
-window.location.href="confirmation.html"
-
 }
 
 
+/* ================= AUTO LOAD ADMIN ================= */
 
-
-
-
-
-
-row.insertCell(5).innerText = b.payment
-window.addEventListener("DOMContentLoaded", function(){
-
-let today = new Date().toISOString().split("T")[0]
-
-document.getElementById("checkin").setAttribute("min", today)
-document.getElementById("checkout").setAttribute("min", today)
-
-})
-document.getElementById("checkin").addEventListener("change", function(){
-
-let checkin = document.getElementById("checkin").value
-
-document.getElementById("checkout").setAttribute("min", checkin)
-
-})
-function checkAvailability(){
-
-let room = document.getElementById("roomType").value
-let msg = document.getElementById("availabilityMsg")
-
-if(roomsAvailable[room] > 0){
-
-msg.style.color = "green"
-msg.innerText = "Room Available"
-
-}else{
-
-msg.style.color = "red"
-msg.innerText = "Room Not Available"
-
+window.onload = function(){
+loadBookings()
 }
 
-}
-function selectRoom(room){
 
-document.getElementById("roomType").value = room
-
-document.getElementById("booking").scrollIntoView({
-behavior:"smooth"
-})
-
-}
-async function loadSocialLinks(){
-
-let response = await fetch("https://hotel-booking-system-u6w2.onrender.com/social-links")
-let data = await response.json()
-
-document.getElementById("instagram").href = data.instagram
-document.getElementById("facebook").href = data.facebook
-document.getElementById("twitter").href = data.twitter
-
-}
-
-loadSocialLinks()
