@@ -27,36 +27,7 @@
 </div>
 
 
-<script>
 
-async function signup(){
-
-let name = document.getElementById("name").value
-let email = document.getElementById("email").value
-let password = document.getElementById("password").value
-
-let response = await fetch("https://hotel-booking-system-u6w2.onrender.com/signup",{
-method:"POST",
-headers:{
-"Content-Type":"application/json"
-},
-body:JSON.stringify({
-name:name,
-email:email,
-password:password
-})
-})
-
-let data = await response.json()
-
-alert(data)
-
-}
-
-
-
-
-</script>
 
 </body>
 
