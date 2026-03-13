@@ -170,43 +170,28 @@ async function bookRoom(){
 
 let name = document.getElementById("name").value
 let email = document.getElementById("email").value
+let room = document.getElementById("roomType").value
 let checkin = document.getElementById("checkin").value
 let checkout = document.getElementById("checkout").value
-let room = document.getElementById("roomType").value
-
-let msg = document.getElementById("bookingMsg")
-
-try{
 
 let response = await fetch("https://hotel-booking-system-u6w2.onrender.com/book-room",{
-
 method:"POST",
-
 headers:{
 "Content-Type":"application/json"
 },
-
 body:JSON.stringify({
 name,
 email,
 room,
 checkin,
-checkout
+checkout,
+payment:"Cash"
 })
-
 })
 
 let data = await response.json()
 
-msg.style.color = "green"
-msg.innerText = data
-
-}catch(err){
-
-msg.style.color = "red"
-msg.innerText = "Booking failed"
-
-}
+alert(data)
 
 }
 function payNow(){
