@@ -1,4 +1,4 @@
-const API ="https://hotel-booking-system-8xru.onrender.com"
+const API = "https://hotel-booking-system-8xru.onrender.com"
 
 /* ================= LOGIN ================= */
 
@@ -143,6 +143,7 @@ alert("Booking failed")
 }
 
 }
+
 
 /* ================= ADMIN BOOKINGS ================= */
 
