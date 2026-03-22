@@ -5,39 +5,7 @@
 <title>Login</title>
 <link rel="stylesheet" href="style.css">
 </head>
-<script>
 
-async function login(){
-
-let email = document.getElementById("email").value
-let password = document.getElementById("password").value
-
-let response = await fetch("https://hotel-booking-system-8xru.onrender.com/login",{
-
-method:"POST",
-
-headers:{
-"Content-Type":"application/json"
-},
-
-body:JSON.stringify({
-email,
-password
-})
-
-})
-
-let data = await response.json()
-
-alert(data)
-
-if(data === "Login Successful"){
-window.location.href = "index.html"
-}
-
-}
-
-</script>
 <body class="login-body">
 
 <div class="login-box">
@@ -56,9 +24,44 @@ window.location.href = "index.html"
 
 </div>
 
+<script>
 
+async function login(){
 
-<script src="script.js"></script>
+let email = document.getElementById("email").value
+let password = document.getElementById("password").value
+
+try{
+
+let response = await fetch("https://hotel-booking-system-8xru.onrender.com/login",{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify({email,password})
+})
+
+let data = await response.json()
+
+console.log("Login Response:", data)  // 🔥 DEBUG
+
+alert(data)
+
+if(data === "Login Successful"){
+window.location.href = "index.html"
+}
+
+}catch(err){
+
+console.log("Login Error:", err)   // 🔥 DEBUG
+alert("Server not responding")
+
+}
+
+}
+
+</script>
+
 </body>
 
 </html>
