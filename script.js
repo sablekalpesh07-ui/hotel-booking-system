@@ -19,10 +19,14 @@ email:email,
 password:password
 })
 })
+let data
 
-let data = await response.json()
-
-alert(data)
+try{
+data = await response.json()
+}catch{
+data = {message:"Server error"}
+}
+alert(data.message)
 
 if(data === "Login Successful"){
 window.location.href="index.html"
@@ -59,7 +63,7 @@ password:password
 
 let data = await response.json()
 
-alert(data)
+alert(data.message)
 
 if(data === "User Registered Successfully"){
 window.location.href="login.html"
@@ -140,7 +144,7 @@ let data = await response.json()
 
 console.log("Booking response:", data)
 
-alert(data)
+alert(data.message)
 
 }catch(err){
 console.log(err)
@@ -184,7 +188,8 @@ table.innerHTML += `
 /* ================= AUTO LOAD ADMIN ================= */
 
 window.onload = function(){
-loadBookings()
+/* comment this for now */
+// loadBookings()
 }
 
 function payNow(){
