@@ -81,7 +81,7 @@ return res.json({message:"User not found"})
 }
 
 if(!password || !user.password){
-return res.json("Server error")
+return res.json({message:"Server error"})
 }
 
 const valid = await bcrypt.compare(password,user.password)
