@@ -18,7 +18,7 @@ res.sendFile(path.join(__dirname,"index.html"))
 })
 
 /* MongoDB connection */
-mongoose.connect("mongodb+srv://sablekalpesh07_db_user:o1jyzlCqAIMiq9mj@cluster0.nlntkfe.mongodb.net/hotelDB")
+mongoose.connect("mongodb+srv://sablekalpesh07_db_user:o1jyzlCqAIMiq9mj@cluster0.nlntkfe.mongodb.net/hotelDB?retryWrites=true&w=majority")
 .then(()=>console.log("MongoDB Connected"))
 .catch(err=>console.log(err))
 
