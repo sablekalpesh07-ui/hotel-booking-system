@@ -99,6 +99,7 @@ res.json("Server error")
 
 /* Booking API */
 app.post("/book-room", async (req,res)=>{
+try{
 
 const {name,email,room,checkin,checkout,payment} = req.body
 
@@ -115,6 +116,10 @@ await booking.save()
 
 res.json("Room booked successfully")
 
+}catch(err){
+console.log(err)
+res.json("Booking error")
+}
 })
 
 /* Admin API */
