@@ -19,34 +19,7 @@
 <th>Check Out</th>
 </tr>
 </table>
-
-<script>
-
-async function loadBookings(){
-
-let response = await fetch("https://hotel-booking-system-8xru.onrender.com//bookings")
-
-let bookings = await response.json()
-
-let table = document.getElementById("bookingTable")
-
-bookings.forEach(b => {
-
-let row = table.insertRow()
-
-row.insertCell(0).innerText = b.name
-row.insertCell(1).innerText = b.email
-row.insertCell(2).innerText = b.room
-row.insertCell(3).innerText = b.checkin
-row.insertCell(4).innerText = b.checkout
-
-})
-
-}
-
-loadBookings()
-
-</script>
+<script src="script.js"></script>
 
 </body>
 </html>
