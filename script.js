@@ -114,9 +114,14 @@ let room = document.getElementById("roomType").value
 let checkin = document.getElementById("checkin").value
 let checkout = document.getElementById("checkout").value
 
+if(!name || !email || !checkin || !checkout){
+alert("Please fill all fields")
+return
+}
+
 try{
 
-let response = await fetch("https://hotel-booking-system-8xru.onrender.com/book-room",{
+let response = await fetch(API + "/book-room",{
 method:"POST",
 headers:{
 "Content-Type":"application/json"
@@ -133,12 +138,12 @@ payment:"Cash"
 
 let data = await response.json()
 
-console.log("SERVER RESPONSE:", data)   // ⭐ IMPORTANT
+console.log("Booking response:", data)
 
 alert(data)
 
 }catch(err){
-console.log("ERROR:", err)              // ⭐ SEE REAL ERROR
+console.log(err)
 alert("Booking failed")
 }
 
@@ -181,8 +186,13 @@ table.innerHTML += `
 window.onload = function(){
 loadBookings()
 }
+
 function payNow(){
 alert("Payment Successful (Demo)")
+}
+function checkAvailability(){
+document.getElementById("availabilityMsg").innerText =
+"Rooms available"
 }
 
 
