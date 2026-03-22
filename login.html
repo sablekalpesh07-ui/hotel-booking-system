@@ -24,43 +24,7 @@
 
 </div>
 
-<script>
-
-async function login(){
-
-let email = document.getElementById("email").value
-let password = document.getElementById("password").value
-
-try{
-
-let response = await fetch("https://hotel-booking-system-8xru.onrender.com/login",{
-method:"POST",
-headers:{
-"Content-Type":"application/json"
-},
-body:JSON.stringify({email,password})
-})
-
-let data = await response.json()
-
-console.log("Login Response:", data)  // 🔥 DEBUG
-
-alert(data)
-
-if(data === "Login Successful"){
-window.location.href = "index.html"
-}
-
-}catch(err){
-
-console.log("Login Error:", err)   // 🔥 DEBUG
-alert("Server not responding")
-
-}
-
-}
-
-</script>
+<script src="script.js"></script>
 
 </body>
 
