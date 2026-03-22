@@ -7,7 +7,9 @@ const path = require("path")
 const app = express()
 
 /* Middleware */
-app.use(cors())
+app.use(cors({
+origin: "*"
+}))
 app.use(express.json())
 
 /* Serve frontend files */
@@ -50,6 +52,12 @@ try{
 
 const {name,email,password} = req.body
 
+const existingUser = await User.findOne({email})
+
+if(existingUser){
+return res.json({message:"User already exists"})
+}
+
 const hashedPassword = await bcrypt.hash(password,10)
 
 const user = new User({
@@ -63,6 +71,7 @@ await user.save()
 res.json({message:"User Registered Successfully"})
 
 }catch(err){
+console.log(err)
 res.json({message:"Signup Error"})
 }
 
@@ -126,11 +135,18 @@ res.json({message:"Booking error"})
 /* Admin API */
 app.get("/bookings", async (req,res)=>{
 
+try{
 let bookings = await Booking.find()
-
-res.json({message:"Booking"})
+res.json(bookings)
+}catch(err){
+console.log(err)
+res.json([])
+}
 
 })
+if(!name || !email || !room || !checkin || !checkout){
+return res.json({message:"All fields required"})
+}
 
 /* Start server */
 const PORT = process.env.PORT || 5000
