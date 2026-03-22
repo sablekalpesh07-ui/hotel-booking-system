@@ -13,71 +13,7 @@
 </head>
 
 
-function calculatePrice(){
 
-let checkin = new Date(document.getElementById("checkin").value)
-let checkout = new Date(document.getElementById("checkout").value)
-let room = document.getElementById("roomType").value
-
-const prices = {
-deluxe:3500,
-suite:6000,
-presidential:12000
-}
-
-let nights = (checkout - checkin)/(1000*60*60*24)
-
-if(nights <= 0){
-document.getElementById("totalPrice").innerText =
-"Check-out must be after check-in"
-return
-}
-
-let total = nights * prices[room]
-
-document.getElementById("totalPrice").innerText =
-"Total Price: ₹" + total + " for " + nights + " nights"
-
-}
-
-
-
-async function bookRoom(){
-
-let name = document.getElementById("name").value
-let email = document.getElementById("email").value
-let checkin = document.getElementById("checkin").value
-let checkout = document.getElementById("checkout").value
-let room = document.getElementById("roomType").value
-
-try{
-
-let response = await fetch("https://hotel-booking-system-8xru.onrender.com/book-room",{
-method:"POST",
-headers:{
-"Content-Type":"application/json"
-},
-body:JSON.stringify({
-name,
-email,
-room,
-checkin,
-checkout,
-payment:"Cash"
-})
-})
-
-let data = await response.json()
-
-console.log("Booking:", data)
-alert(data)
-
-}catch(err){
-console.log(err)
-alert("Booking failed")
-}
-
-}
 
 
 
