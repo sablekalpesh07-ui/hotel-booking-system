@@ -70,7 +70,6 @@ res.json("Signup Error")
 
 /* Login API */
 app.post("/login", async (req,res)=>{
-
 try{
 
 const {email,password} = req.body
@@ -81,19 +80,22 @@ if(!user){
 return res.json("User not found")
 }
 
-const validPassword = await bcrypt.compare(password,user.password)
+const valid = await bcrypt.compare(password,user.password)
 
-if(validPassword){
+if(valid){
 res.json("Login Successful")
 }else{
 res.json("Invalid Password")
 }
 
 }catch(err){
-res.json("Login Error")
+console.log(err)
+res.json("Server error")
 }
-
 })
+
+
+
 
 /* Booking API */
 app.post("/book-room", async (req,res)=>{
