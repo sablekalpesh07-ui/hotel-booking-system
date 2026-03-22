@@ -68,11 +68,18 @@ res.json({message:"Signup Error"})
 /* Login */
 app.post("/login", async (req,res)=>{
 try{
+
 const {email,password} = req.body
 
 const user = await User.findOne({email})
+
 if(!user){
 return res.json({message:"User not found"})
+}
+
+/* SAFE CHECK */
+if(!user.password || user.password.length < 20){
+return res.json({message:"Invalid stored password"})
 }
 
 const valid = await bcrypt.compare(password,user.password)
@@ -82,8 +89,9 @@ res.json({message:"Login Successful"})
 }else{
 res.json({message:"Invalid Password"})
 }
+
 }catch(err){
-console.log(err)
+console.log("LOGIN ERROR:", err)
 res.json({message:"Server error"})
 }
 })
@@ -125,3 +133,4 @@ const PORT = process.env.PORT || 5000
 app.listen(PORT, ()=>{
 console.log("Server running on port", PORT)
 })
+
