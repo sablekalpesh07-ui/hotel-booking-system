@@ -181,5 +181,8 @@ table.innerHTML += `
 window.onload = function(){
 loadBookings()
 }
+function payNow(){
+alert("Payment Successful (Demo)")
+}
 
 
