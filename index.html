@@ -50,7 +50,7 @@ let checkin = document.getElementById("checkin").value
 let checkout = document.getElementById("checkout").value
 let room = document.getElementById("roomType").value
 
-let response = await fetch("http://localhost:5000/book-room",{
+let response = await fetch("https://hotel-booking-system-8xru.onrender.com/book-room"),{
 method:"POST",
 headers:{
 "Content-Type":"application/json"
