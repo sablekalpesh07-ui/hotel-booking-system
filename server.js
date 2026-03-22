@@ -7,12 +7,10 @@ const path = require("path")
 const app = express()
 
 /* Middleware */
-app.use(cors({
-origin: "*"
-}))
+app.use(cors({ origin: "*" }))
 app.use(express.json())
 
-/* Serve frontend files */
+/* Serve frontend */
 app.use(express.static(__dirname))
 
 app.get("/", (req,res)=>{
@@ -22,75 +20,59 @@ res.sendFile(path.join(__dirname,"index.html"))
 /* MongoDB connection */
 mongoose.connect("mongodb+srv://sablekalpesh07_db_user:o1jyzlCqAIMiq9mj@cluster0.nlntkfe.mongodb.net/hotelDB?retryWrites=true&w=majority")
 .then(()=>console.log("MongoDB Connected"))
-.catch(err=>console.log(err))
+.catch(err=>{
+console.log("MongoDB Error:", err)
+})
 
-/* User Schema */
-const UserSchema = new mongoose.Schema({
+/* Schemas */
+const User = mongoose.model("User", new mongoose.Schema({
 name:String,
 email:String,
 password:String
-})
+}))
 
-const User = mongoose.model("User",UserSchema)
-
-/* Booking Schema */
-const BookingSchema = new mongoose.Schema({
+const Booking = mongoose.model("Booking", new mongoose.Schema({
 name:String,
 email:String,
 room:String,
 checkin:String,
 checkout:String,
 payment:String
-})
+}))
 
-const Booking = mongoose.model("Booking",BookingSchema)
-
-/* Signup API */
+/* Signup */
 app.post("/signup", async (req,res)=>{
-
 try{
-
 const {name,email,password} = req.body
 
-const existingUser = await User.findOne({email})
+if(!name || !email || !password){
+return res.json({message:"All fields required"})
+}
 
-if(existingUser){
+const existing = await User.findOne({email})
+if(existing){
 return res.json({message:"User already exists"})
 }
 
-const hashedPassword = await bcrypt.hash(password,10)
+const hash = await bcrypt.hash(password,10)
 
-const user = new User({
-name,
-email,
-password:hashedPassword
-})
-
-await user.save()
+await new User({name,email,password:hash}).save()
 
 res.json({message:"User Registered Successfully"})
-
 }catch(err){
 console.log(err)
 res.json({message:"Signup Error"})
 }
-
 })
 
-/* Login API */
+/* Login */
 app.post("/login", async (req,res)=>{
 try{
-
 const {email,password} = req.body
 
 const user = await User.findOne({email})
-
 if(!user){
 return res.json({message:"User not found"})
-}
-
-if(!password || !user.password){
-return res.json({message:"Server error"})
 }
 
 const valid = await bcrypt.compare(password,user.password)
@@ -100,41 +82,34 @@ res.json({message:"Login Successful"})
 }else{
 res.json({message:"Invalid Password"})
 }
-
 }catch(err){
 console.log(err)
 res.json({message:"Server error"})
 }
 })
 
-/* Booking API */
+/* Booking */
 app.post("/book-room", async (req,res)=>{
 try{
-
 const {name,email,room,checkin,checkout,payment} = req.body
 
-const booking = new Booking({
-name,
-email,
-room,
-checkin,
-checkout,
-payment
-})
+if(!name || !email || !room || !checkin || !checkout){
+return res.json({message:"All fields required"})
+}
 
-await booking.save()
+await new Booking({
+name,email,room,checkin,checkout,payment
+}).save()
 
 res.json({message:"Room booked successfully"})
-
 }catch(err){
 console.log(err)
 res.json({message:"Booking error"})
 }
 })
 
-/* Admin API */
+/* Get bookings */
 app.get("/bookings", async (req,res)=>{
-
 try{
 let bookings = await Booking.find()
 res.json(bookings)
@@ -142,15 +117,11 @@ res.json(bookings)
 console.log(err)
 res.json([])
 }
-
 })
-if(!name || !email || !room || !checkin || !checkout){
-return res.json({message:"All fields required"})
-}
 
 /* Start server */
 const PORT = process.env.PORT || 5000
 
-app.listen(PORT,()=>{
-console.log("Server running on port",PORT)
+app.listen(PORT, ()=>{
+console.log("Server running on port", PORT)
 })
