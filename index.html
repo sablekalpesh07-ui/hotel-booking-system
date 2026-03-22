@@ -2,7 +2,6 @@
 <html lang="en">
 
 <head>
-   <script src="https://www.paypal.com/sdk/js?client-id=YOUR_CLIENT_ID&currency=USD"></script>
    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,35 +11,36 @@
 <link rel="stylesheet" href="style.css">
 
 </head>
-<script>
+
 
 function calculatePrice(){
 
 let checkin = new Date(document.getElementById("checkin").value)
 let checkout = new Date(document.getElementById("checkout").value)
+let room = document.getElementById("roomType").value
 
-let pricePerNight = document.getElementById("roomType").value
+const prices = {
+deluxe:3500,
+suite:6000,
+presidential:12000
+}
 
-let nights = (checkout - checkin) / (1000*60*60*24)
+let nights = (checkout - checkin)/(1000*60*60*24)
 
 if(nights <= 0){
-
 document.getElementById("totalPrice").innerText =
 "Check-out must be after check-in"
-
 return
-
 }
 
-let total = nights * pricePerNight
+let total = nights * prices[room]
 
 document.getElementById("totalPrice").innerText =
-"Total Price: $" + total + " for " + nights + " nights"
+"Total Price: ₹" + total + " for " + nights + " nights"
 
 }
 
-</script>
-<script>
+
 
 async function bookRoom(){
 
@@ -50,7 +50,9 @@ let checkin = document.getElementById("checkin").value
 let checkout = document.getElementById("checkout").value
 let room = document.getElementById("roomType").value
 
-let response = await fetch("https://hotel-booking-system-8xru.onrender.com/book-room"),{
+try{
+
+let response = await fetch("https://hotel-booking-system-8xru.onrender.com/book-room",{
 method:"POST",
 headers:{
 "Content-Type":"application/json"
@@ -60,17 +62,26 @@ name,
 email,
 room,
 checkin,
-checkout
+checkout,
+payment:"Cash"
 })
 })
 
 let data = await response.json()
 
+console.log("Booking:", data)
 alert(data)
+
+}catch(err){
+console.log(err)
+alert("Booking failed")
+}
 
 }
 
-</script>
+
+
+
 <body>
 <header id="navbar">
 
@@ -222,7 +233,7 @@ alert(data)
 <button type="button" onclick="calculatePrice()">Calculate Price</button>
 
 <h3 id="totalPrice"></h3>
-<button onclick="bookRoom()">Book Now</button>
+<button type="button" onclick="bookRoom()">Book Now</button>
 <button onclick="payNow()">Pay Now</button>
 <p id="availabilityMsg"></p>
 
