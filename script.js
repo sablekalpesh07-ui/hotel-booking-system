@@ -1,4 +1,4 @@
-const API = "https://hotel-booking-system-u6w2.onrender.com"
+const API ="https://hotel-booking-system-8xru.onrender.com"
 
 /* ================= LOGIN ================= */
 
@@ -116,31 +116,33 @@ let checkout = document.getElementById("checkout").value
 
 try{
 
-let response = await fetch(API + "/book-room",{
+let response = await fetch("https://hotel-booking-system-8xru.onrender.com/book-room",{
 method:"POST",
 headers:{
 "Content-Type":"application/json"
 },
 body:JSON.stringify({
-name:name,
-email:email,
-room:room,
-checkin:checkin,
-checkout:checkout,
+name,
+email,
+room,
+checkin,
+checkout,
 payment:"Cash"
 })
 })
 
 let data = await response.json()
 
+console.log("SERVER RESPONSE:", data)   // ⭐ IMPORTANT
+
 alert(data)
 
 }catch(err){
+console.log("ERROR:", err)              // ⭐ SEE REAL ERROR
 alert("Booking failed")
 }
 
 }
-
 
 /* ================= ADMIN BOOKINGS ================= */
 
