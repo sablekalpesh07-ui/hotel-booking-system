@@ -26,9 +26,10 @@ data = await response.json()
 }catch{
 data = {message:"Server error"}
 }
+
 alert(data.message)
 
-if(data === "Login Successful"){
+if(data.message === "Login Successful"){
 window.location.href="index.html"
 }
 
@@ -61,14 +62,19 @@ password:password
 })
 })
 
-let data = await response.json()
+let data
+
+try{
+data = await response.json()
+}catch{
+data = {message:"Server error"}
+}
 
 alert(data.message)
 
-if(data === "User Registered Successfully"){
+if(data.message === "User Registered Successfully"){
 window.location.href="login.html"
 }
-
 }catch(err){
 alert("Server error")
 }
@@ -140,7 +146,13 @@ payment:"Cash"
 })
 })
 
-let data = await response.json()
+let data
+
+try{
+data = await response.json()
+}catch{
+data = {message:"Server error"}
+}
 
 console.log("Booking response:", data)
 
@@ -158,7 +170,10 @@ alert("Booking failed")
 
 async function loadBookings(){
 
+try{
+
 let response = await fetch(API + "/bookings")
+
 let bookings = await response.json()
 
 let table = document.getElementById("bookingTable")
@@ -168,7 +183,6 @@ if(!table) return
 table.innerHTML=""
 
 bookings.forEach(b=>{
-
 table.innerHTML += `
 <tr>
 <td>${b.name}</td>
@@ -179,8 +193,11 @@ table.innerHTML += `
 <td>${b.payment}</td>
 </tr>
 `
-
 })
+
+}catch(err){
+console.log("Admin load error:", err)
+}
 
 }
 
