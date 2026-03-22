@@ -60,10 +60,10 @@ password:hashedPassword
 
 await user.save()
 
-res.json("User Registered Successfully")
+res.json({message:"User Registered Successfully"})
 
 }catch(err){
-res.json("Signup Error")
+res.json({message:"Signup Error"})
 }
 
 })
@@ -77,25 +77,26 @@ const {email,password} = req.body
 const user = await User.findOne({email})
 
 if(!user){
-return res.json("User not found")
+return res.json({message:"User not found"})
+}
+
+if(!password || !user.password){
+return res.json("Server error")
 }
 
 const valid = await bcrypt.compare(password,user.password)
 
 if(valid){
-res.json("Login Successful")
+res.json({message:"Login Successful"})
 }else{
-res.json("Invalid Password")
+res.json({message:"Invalid Password"})
 }
 
 }catch(err){
 console.log(err)
-res.json("Server error")
+res.json({message:"Server error"})
 }
 })
-
-
-
 
 /* Booking API */
 app.post("/book-room", async (req,res)=>{
@@ -114,11 +115,11 @@ payment
 
 await booking.save()
 
-res.json("Room booked successfully")
+res.json({message:"Room booked successfully"})
 
 }catch(err){
 console.log(err)
-res.json("Booking error")
+res.json({message:"Booking error"})
 }
 })
 
@@ -127,7 +128,7 @@ app.get("/bookings", async (req,res)=>{
 
 let bookings = await Booking.find()
 
-res.json(bookings)
+res.json({message:"Booking"})
 
 })
 
