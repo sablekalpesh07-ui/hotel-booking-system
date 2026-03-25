@@ -148,35 +148,50 @@ res.json([])
 }
 
 })
-async function loadBookings(){
+/* ================= CONTACT SCHEMA ================= */
+const Contact = mongoose.model("Contact", new mongoose.Schema({
+name:String,
+email:String,
+phone:String,
+method:String,
+message:String
+}))
 
-let table = document.getElementById("bookingTable")
-
-if(!table) return
-
+/* ================= CONTACT API ================= */
+app.post("/contact", async (req,res)=>{
 try{
 
-let res = await fetch(API + "/bookings")
-let data = await res.json()
+const {name,email,phone,method,message} = req.body
 
-data.forEach(b=>{
+if(!name || !email || !message){
+return res.json({message:"All fields required"})
+}
 
-table.innerHTML += `
-<tr>
-<td>${b.name}</td>
-<td>${b.email}</td>
-<td>${b.room}</td>
-<td>${b.checkin}</td>
-<td>${b.checkout}</td>
-<td>${b.payment}</td>
-</tr>
-`
+await new Contact({
+name,
+email,
+phone,
+method,
+message
+}).save()
 
-})
+res.json({message:"Message sent successfully"})
 
 }catch(err){
-console.log("Error loading bookings")
+console.log(err)
+res.json({message:"Error saving message"})
 }
+})
 
+/* ================= GET CONTACTS ================= */
+app.get("/contacts", async (req,res)=>{
+try{
+let contacts = await Contact.find()
+res.json(contacts)
+}catch(err){
+console.log(err)
+res.json([])
 }
+})
+
 
