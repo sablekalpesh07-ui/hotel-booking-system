@@ -18,11 +18,15 @@ res.sendFile(path.join(__dirname,"index.html"))
 })
 
 /* MongoDB connection */
-mongoose.connect("mongodb+srv://sablekalpesh07_db_user:o1jyzlCqAIMiq9mj@cluster0.nlntkfe.mongodb.net/hotelDB?retryWrites=true&w=majority")
+mongoose.connect(
+"mongodb+srv://sablekalpesh07_db_user:o1jyzlCqAIMiq9mj@cluster0.nlntkfe.mongodb.net/hotelDB?retryWrites=true&w=majority",
+{
+useNewUrlParser: true,
+useUnifiedTopology: true
+}
+)
 .then(()=>console.log("MongoDB Connected"))
-.catch(err=>{
-console.log("MongoDB Error:", err)
-})
+.catch(err=>console.log("Mongo Error:", err))
 
 /* Schemas */
 const User = mongoose.model("User", new mongoose.Schema({
@@ -133,4 +137,46 @@ const PORT = process.env.PORT || 5000
 app.listen(PORT, ()=>{
 console.log("Server running on port", PORT)
 })
+app.get("/contacts", async (req,res)=>{
+
+try{
+let contacts = await Contact.find()
+res.json(contacts)
+}catch(err){
+console.log(err)
+res.json([])
+}
+
+})
+async function loadBookings(){
+
+let table = document.getElementById("bookingTable")
+
+if(!table) return
+
+try{
+
+let res = await fetch(API + "/bookings")
+let data = await res.json()
+
+data.forEach(b=>{
+
+table.innerHTML += `
+<tr>
+<td>${b.name}</td>
+<td>${b.email}</td>
+<td>${b.room}</td>
+<td>${b.checkin}</td>
+<td>${b.checkout}</td>
+<td>${b.payment}</td>
+</tr>
+`
+
+})
+
+}catch(err){
+console.log("Error loading bookings")
+}
+
+}
 
