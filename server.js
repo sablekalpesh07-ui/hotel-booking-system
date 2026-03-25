@@ -3,6 +3,15 @@ const mongoose = require("mongoose")
 const cors = require("cors")
 const bcrypt = require("bcryptjs")
 const path = require("path")
+const nodemailer = require("nodemailer")
+
+const transporter = nodemailer.createTransport({
+service: "gmail",
+auth: {
+user: "sablekalpesh07@gmail.com",
+pass: "apei tuan tsyw xdmd"
+}
+})
 
 const app = express()
 
@@ -81,21 +90,25 @@ if(!user){
 return res.json({message:"User not found"})
 }
 
-/* SAFE CHECK */
-if(!user.password || user.password.length < 20){
-return res.json({message:"Invalid stored password"})
-}
-
 const valid = await bcrypt.compare(password,user.password)
 
 if(valid){
+
+await transporter.sendMail({
+from: "yourgmail@gmail.com",
+to: user.email,
+subject: "Login Alert",
+text: "You have successfully logged in to Luxury Hotel."
+})
+
 res.json({message:"Login Successful"})
+
 }else{
 res.json({message:"Invalid Password"})
 }
 
 }catch(err){
-console.log("LOGIN ERROR:", err)
+console.log(err)
 res.json({message:"Server error"})
 }
 })
@@ -193,5 +206,6 @@ console.log(err)
 res.json([])
 }
 })
+
 
 
