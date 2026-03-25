@@ -175,7 +175,6 @@ document.getElementById("popup").classList.remove("active")
 async function loadContacts(){
 
 let table = document.getElementById("contactTable")
-
 if(!table) return
 
 try{
@@ -183,8 +182,9 @@ try{
 let res = await fetch(API + "/contacts")
 let data = await res.json()
 
-data.forEach(c=>{
+console.log("Contacts:", data) // debug
 
+data.forEach(c=>{
 table.innerHTML += `
 <tr>
 <td>${c.name}</td>
@@ -194,21 +194,22 @@ table.innerHTML += `
 <td>${c.message}</td>
 </tr>
 `
-
 })
 
 }catch(err){
-console.log("Error loading contacts")
+console.log(err)
 }
 
 }
+
+document.addEventListener("DOMContentLoaded", loadContacts)
 
 /* AUTO LOAD */
 document.addEventListener("DOMContentLoaded", loadContacts)
+
 async function loadBookings(){
 
 let table = document.getElementById("bookingTable")
-
 if(!table) return
 
 try{
@@ -216,18 +217,7 @@ try{
 let res = await fetch(API + "/bookings")
 let data = await res.json()
 
-console.log("BOOKINGS DATA:", data) // 🔥 DEBUG
-
-table.innerHTML = `
-<tr>
-<th>Name</th>
-<th>Email</th>
-<th>Room</th>
-<th>Check-in</th>
-<th>Check-out</th>
-<th>Payment</th>
-</tr>
-`
+console.log("Bookings:", data) // debug
 
 data.forEach(b=>{
 table.innerHTML += `
@@ -243,10 +233,11 @@ table.innerHTML += `
 })
 
 }catch(err){
-console.log("Error:", err)
+console.log(err)
+}
 }
 
-}
+document.addEventListener("DOMContentLoaded", loadBookings)
 const Contact = mongoose.model("Contact", new mongoose.Schema({
 name:String,
 email:String,
@@ -254,5 +245,42 @@ phone:String,
 method:String,
 message:String
 }))
+async function submitContact(){
+
+let name = document.getElementById("name").value
+let email = document.getElementById("email").value
+let phone = document.getElementById("phone").value
+let method = document.getElementById("method").value
+let message = document.getElementById("message").value
+
+if(!name || !email || !message){
+alert("Fill required fields")
+return
+}
+
+try{
+
+let res = await fetch(API + "/contact",{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify({
+name,email,phone,method,message
+})
+})
+
+let data = await res.json()
+
+console.log("CONTACT RESPONSE:", data)
+
+alert(data.message)
+
+}catch(err){
+console.log(err)
+alert("Error")
+}
+
+}
 
 
