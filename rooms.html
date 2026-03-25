@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Rooms</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<!-- IMAGE POPUP -->
+<div id="popup" class="popup" onclick="closeImage()">
+  <img id="popupImg">
+</div>
+
+<!-- ROOMS SECTION -->
+<section class="rooms-section">
+
+<h2>Our Rooms</h2>
+
+<div class="room-container">
+
+  <!-- ROOM 1 -->
+  <div class="room">
+    <img src="room1.jpg" onclick="openImage(this.src)">
+    <h3 class="room-title">Deluxe Room</h3>
+    <p class="room-price">₹3500 / night</p>
+    <button onclick="goToBooking('deluxe')">Book Now</button>
+  </div>
+
+  <!-- ROOM 2 -->
+  <div class="room">
+    <img src="room2.jpg" onclick="openImage(this.src)">
+    <h3 class="room-title">Luxury Suite</h3>
+    <p class="room-price">₹6000 / night</p>
+    <button onclick="goToBooking('suite')">Book Now</button>
+  </div>
+
+  <!-- ROOM 3 -->
+  <div class="room">
+    <img src="room3.jpg" onclick="openImage(this.src)">
+    <h3 class="room-title">Presidential Suite</h3>
+    <p class="room-price">₹12000 / night</p>
+    <button onclick="goToBooking('presidential')">Book Now</button>
+  </div>
+
+</div>
+
+</section>
+
+<script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Booking</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+
+
+<nav>
+<h2>Luxury Hotel</h2>
+<div>
+<a href="index.html">Home</a>
+<a href="rooms.html" target="_blank">Rooms</a>
+<a href="booking.html" target="_blank">Booking</a>
+<a href="gallery.html" target="_blank">Gallery</a>
+<a href="contact.html" target="_blank">Contact</a>
+
+</div>
+</nav>
+
+<div class="container">
+
+<h2>Book Your Stay</h2>
+
+<input type="text" id="name" placeholder="Name">
+<input type="email" id="email" placeholder="Email">
+
+<label>Check In</label>
+<input type="date" id="checkin">
+
+<label>Check Out</label>
+<input type="date" id="checkout">
+
+<select id="roomType">
+<option value="deluxe">Deluxe</option>
+<option value="suite">Suite</option>
+<option value="presidential">Presidential</option>
+</select>
+
+<button onclick="calculatePrice()">Calculate Price</button>
+
+<p id="totalPrice"></p>
+
+<button onclick="bookRoom()">Book Now</button>
+<button onclick="payNow()">Pay Now</button>
+
+</div>
+
+<script src="script.js"></script>
+
+
+
+</body>
+<script src="script.js"></script>
+</html>
