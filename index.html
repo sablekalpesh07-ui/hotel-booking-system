@@ -27,12 +27,17 @@
 
 <nav id="navMenu">
 
-<a href="#home">Home</a>
-<a href="#rooms">Rooms</a>
-<a href="#booking">Booking</a>
-<a href="#gallery">Gallery</a>
-<a href="#contact">Contact</a>
-<a href="login.html" class="login-btn">Login</a>
+<nav>
+<a href="index.html">Home</a>
+<a href="rooms.html" target="_blank">Rooms</a>
+<a href="booking.html" target="_blank">Booking</a>
+<a href="gallery.html" target="_blank">Gallery</a>
+<a href="contact.html" 
+target="_blank">Contact</a>
+
+<a href="login.html" target="_blank">Login</a>
+
+</nav>
 
 </nav>
 
@@ -57,184 +62,9 @@
 </div>
 
 </section>
-<section class="room-slider">
 
-<h2>Our Luxury Rooms</h2>
 
-<div class="slider">
 
-<button class="prev" onclick="prevSlide()">❮</button>
-
-<div class="slides">
-
-<img src="https://images.unsplash.com/photo-1566073771259-6a8506099945">
-<img src="https://images.unsplash.com/photo-1582719508461-905c673771fd">
-<img src="https://images.unsplash.com/photo-1590490360182-c33d57733427">
-<img src="https://images.unsplash.com/photo-1560185127-6ed189bf02f4">
-<img src="https://images.unsplash.com/photo-1560448075-bb485b067938">
-
-</div>
-
-<button class="next" onclick="nextSlide()">❯</button>
-
-</div>
-
-</section>
-<section id="rooms" class="rooms">
-<section class="rooms">
-
-<h2>Our Rooms</h2>
-
-<div class="room-container">
-
-<div class="room-card">
-<img src="https://images.unsplash.com/photo-1611892440504-42a792e24d32?auto=format&fit=crop&w=800&q=60">
-<h3>Deluxe Room</h3>
-<p>₹3500 per night</p>
-<button onclick="selectRoom('deluxe')">Book Now</button>
-</div>
-
-<div class="room-card">
-<img src="https://images.unsplash.com/photo-1566073771259-6a8506099945">
-<h3>Luxury Suite</h3>
-<p>₹6000 per night</p>
-<button onclick="selectRoom('suite')">Book Now</button>
-</div>
-
-<div class="room-card">
-<img src="https://images.unsplash.com/photo-1590490360182-c33d57733427">
-<h3>Presidential Suite</h3>
-<p>₹12000 per night</p>
-<button onclick="selectRoom('presidential')">Book Now</button>
-</div>
-
-</div>
-
-</section>
-
-
-
-
-</div>
-
-</section>
-<section class="services">
-
-<h2>Our Services</h2>
-
-<div class="service-container">
-
-<div class="service-card">
-<h3>Luxury Rooms</h3>
-<p>Experience premium comfort with modern interiors.</p>
-</div>
-
-<div class="service-card">
-<h3>Spa & Wellness</h3>
-<p>Relax with world-class spa and wellness services.</p>
-</div>
-
-<div class="service-card">
-<h3>Fine Dining</h3>
-<p>Enjoy delicious cuisines from our expert chefs.</p>
-</div>
-
-<div class="service-card">
-<h3>Swimming Pool</h3>
-<p>Infinity pool with a stunning resort atmosphere.</p>
-</div>
-
-</div>
-<section id="booking" class="booking">
-
-<h2>Book Your Stay</h2>
-
-<div class="booking-box">
-
-<input type="text" id="name" placeholder="Full Name">
-
-<input type="email" id="email" placeholder="Email">
-
-<label>Check In</label>
-<input type="date" id="checkin">
-
-<label>Check Out</label>
-<input type="date" id="checkout">
-<select id="roomType" onchange="checkAvailability()">
-<option value="deluxe">Deluxe Room (Rs.3500/night)</option>
-<option value="suite">Luxury Suite (Rs.6000/night)</option>
-<option value="presidential">Presidential Suite (Rs.12000/night)</option>
-</select>
-
-<button type="button" onclick="calculatePrice()">Calculate Price</button>
-
-<h3 id="totalPrice"></h3>
-<button type="button" onclick="bookRoom()">Book Now</button>
-<button onclick="payNow()">Pay Now</button>
-<p id="availabilityMsg"></p>
-
-</div>
-
-</section>
-
-<h2>Book Your Stay</h2>
-
-
-
-
-
-
-
-
-
-
-
-<section id="gallery" class="gallery">
-
-<h2>Hotel Gallery</h2>
-
-
-
-
-<div class="gallery-container">
-
-<img src="https://images.unsplash.com/photo-1566073771259-6a8506099945" onclick="openImage(this)">
-<img src="https://images.unsplash.com/photo-1590490360182-c33d57733427" onclick="openImage(this)">
-<img src="https://images.unsplash.com/photo-1582719508461-905c673771fd" onclick="openImage(this)">
-<img src="https://images.unsplash.com/photo-1560185127-6ed189bf02f4" onclick="openImage(this)">
-<img src="https://images.unsplash.com/photo-1542314831-068cd1dbfeeb" onclick="openImage(this)">
-<img src="https://images.unsplash.com/photo-1560448075-bb485b067938" onclick="openImage(this)">
-<img src="https://images.unsplash.com/photo-1559599101-f09722fb4948" onclick="openImage(this)">
-<img src="https://images.unsplash.com/photo-1564501049412-61c2a3083791" onclick="openImage(this)">
-<img src="https://images.unsplash.com/photo-1551882547-ff40c63fe5fa" onclick="openImage(this)">
-
-</div>
-
-</section>
-<section class="testimonials">
-
-<h2>Guest Reviews</h2>
-
-<div class="testimonial-slider">
-
-<div class="testimonial">
-<p>"Amazing stay! Rooms were luxurious."</p>
-<h4>— Rahul Sharma</h4>
-</div>
-
-<div class="testimonial">
-<p>"Best hotel experience I've ever had."</p>
-<h4>— Priya Mehta</h4>
-</div>
-
-<div class="testimonial">
-<p>"Great service and beautiful rooms."</p>
-<h4>— Aman Verma</h4>
-</div>
-
-</div>
-
-</section>
 
 <!-- Lightbox -->
 
@@ -247,20 +77,6 @@
 </div>
 
 </div>
-
-</section>
-
-
-<section class="map">
-
-<h2>Find Us</h2>
-
-<iframe
-src="https://maps.google.com/maps?q=hotel&t=&z=13&ie=UTF8&iwloc=&output=embed">
-</iframe>
-
-</section>
-
 
 <footer>
 
