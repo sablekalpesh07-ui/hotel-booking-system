@@ -17,21 +17,19 @@
 
 <!-- LEFT FORM -->
 <div class="contact-form">
+<input type="text" id="name" placeholder="Full Name">
 
-<input type="text" placeholder="Full Name">
+<input type="email" id="email" placeholder="Email Address">
 
-<input type="email" placeholder="Email Address">
+<input type="tel" id="phone" placeholder="Mobile Number">
 
-<input type="tel" placeholder="Mobile Number">
-
-<select>
-<option>Select Preferred Contact</option>
+<select id="method">
 <option>Email</option>
 <option>Phone</option>
 <option>WhatsApp</option>
 </select>
 
-<textarea placeholder="Your Message"></textarea>
+<textarea id="message" placeholder="Your Message"></textarea>
 
 <button onclick="submitContact()">Send Message</button>
 
