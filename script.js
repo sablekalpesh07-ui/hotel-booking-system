@@ -205,5 +205,54 @@ console.log("Error loading contacts")
 
 /* AUTO LOAD */
 document.addEventListener("DOMContentLoaded", loadContacts)
+async function loadBookings(){
+
+let table = document.getElementById("bookingTable")
+
+if(!table) return
+
+try{
+
+let res = await fetch(API + "/bookings")
+let data = await res.json()
+
+console.log("BOOKINGS DATA:", data) // 🔥 DEBUG
+
+table.innerHTML = `
+<tr>
+<th>Name</th>
+<th>Email</th>
+<th>Room</th>
+<th>Check-in</th>
+<th>Check-out</th>
+<th>Payment</th>
+</tr>
+`
+
+data.forEach(b=>{
+table.innerHTML += `
+<tr>
+<td>${b.name}</td>
+<td>${b.email}</td>
+<td>${b.room}</td>
+<td>${b.checkin}</td>
+<td>${b.checkout}</td>
+<td>${b.payment}</td>
+</tr>
+`
+})
+
+}catch(err){
+console.log("Error:", err)
+}
+
+}
+const Contact = mongoose.model("Contact", new mongoose.Schema({
+name:String,
+email:String,
+phone:String,
+method:String,
+message:String
+}))
 
 
