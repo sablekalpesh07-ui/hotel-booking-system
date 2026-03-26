@@ -22,16 +22,13 @@ app.post("/send-otp", async (req, res) => {
   try {
     const { email } = req.body
 
-    if (!email) {
-      return res.json({ message: "Email required" })
-    }
-
     const otp = Math.floor(100000 + Math.random() * 900000)
 
-    otpStore[email] = otp
+    console.log("Sending OTP to:", email)
+    console.log("Using email:", process.env.EMAIL_USER)
 
     await transporter.sendMail({
-      from: "Luxury Hotel",
+      from: process.env.EMAIL_USER,
       to: email,
       subject: "Your OTP Code",
       html: `<h2>Your OTP is: ${otp}</h2>`
@@ -40,11 +37,10 @@ app.post("/send-otp", async (req, res) => {
     res.json({ message: "OTP sent to email" })
 
   } catch (err) {
-    console.log(err)
+    console.log("OTP ERROR:", err) // 🔥 THIS WILL SHOW REAL ERROR
     res.json({ message: "Error sending OTP" })
   }
 })
-
 app.post("/verify-otp", (req, res) => {
   const { email, otp } = req.body
 
