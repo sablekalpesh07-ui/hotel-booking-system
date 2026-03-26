@@ -1,167 +1,241 @@
-const express = require("express")
-const mongoose = require("mongoose")
-const cors = require("cors")
-const bcrypt = require("bcryptjs")
-const path = require("path")
-const nodemailer = require("nodemailer")
+const API = "https://hotel-booking-system-8xru.onrender.com"
 
-const transporter = nodemailer.createTransport({
-service: "gmail",
-auth: {
-user: "sablekalpesh07@gmail.com",
-pass: "apei tuan tsyw xdmd"
+/* ================= LOGIN ================= */
+async function login(){
+
+let email = document.getElementById("email")?.value
+let password = document.getElementById("password")?.value
+
+if(!email || !password){
+alert("Please enter email & password")
+return
 }
-})
 
-const app = express()
-
-/* Middleware */
-app.use(cors({ origin: "*" }))
-app.use(express.json())
-
-/* Serve frontend */
-app.use(express.static(__dirname))
-
-app.get("/", (req,res)=>{
-res.sendFile(path.join(__dirname,"index.html"))
-})
-
-/* MongoDB connection */
-mongoose.connect(
-"mongodb+srv://sablekalpesh07_db_user:o1jyzlCqAIMiq9mj@cluster0.nlntkfe.mongodb.net/hotelDB?retryWrites=true&w=majority",
-{
-useNewUrlParser: true,
-useUnifiedTopology: true
-}
-)
-.then(()=>console.log("MongoDB Connected"))
-.catch(err=>console.log("Mongo Error:", err))
-
-/* Schemas */
-const User = mongoose.model("User", new mongoose.Schema({
-name:String,
-email:String,
-password:String
-}))
-
-const Booking = mongoose.model("Booking", new mongoose.Schema({
-name:String,
-email:String,
-room:String,
-checkin:String,
-checkout:String,
-payment:String
-}))
-
-/* Signup */
-app.post("/signup", async (req,res)=>{
 try{
-const {name,email,password} = req.body
+
+let res = await fetch(API + "/login",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({email,password})
+})
+
+let data = await res.json()
+
+alert(data.message)
+
+if(data.message === "Login Successful"){
+window.location.href = "index.html"
+}
+
+}catch(err){
+alert("Server error")
+}
+
+}
+
+/* ================= SIGNUP ================= */
+async function signup(){
+
+let name = document.getElementById("name")?.value
+let email = document.getElementById("email")?.value
+let password = document.getElementById("password")?.value
 
 if(!name || !email || !password){
-return res.json({message:"All fields required"})
+alert("Fill all fields")
+return
 }
 
-const existing = await User.findOne({email})
-if(existing){
-return res.json({message:"User already exists"})
-}
-
-const hash = await bcrypt.hash(password,10)
-
-await new User({name,email,password:hash}).save()
-
-res.json({message:"User Registered Successfully"})
-}catch(err){
-console.log(err)
-res.json({message:"Signup Error"})
-}
-})
-
-/* Login */
-app.post("/login", async (req,res)=>{
 try{
 
-const {email,password} = req.body
-
-const user = await User.findOne({email})
-
-if(!user){
-return res.json({message:"User not found"})
-}
-
-const valid = await bcrypt.compare(password,user.password)
-
-if(valid){
-
-await transporter.sendMail({
-from: "yourgmail@gmail.com",
-to: user.email,
-subject: "Login Alert",
-text: "You have successfully logged in to Luxury Hotel."
+let res = await fetch(API + "/signup",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({name,email,password})
 })
 
-res.json({message:"Login Successful"})
+let data = await res.json()
 
-}else{
-res.json({message:"Invalid Password"})
+alert(data.message)
+
+if(data.message === "User Registered Successfully"){
+window.location.href = "login.html"
 }
 
 }catch(err){
-console.log(err)
-res.json({message:"Server error"})
-}
-})
-
-/* Booking */
-app.post("/book-room", async (req,res)=>{
-try{
-const {name,email,room,checkin,checkout,payment} = req.body
-
-if(!name || !email || !room || !checkin || !checkout){
-return res.json({message:"All fields required"})
+alert("Server error")
 }
 
-await new Booking({
-name,email,room,checkin,checkout,payment
-}).save()
-
-res.json({message:"Room booked successfully"})
-}catch(err){
-console.log(err)
-res.json({message:"Booking error"})
 }
-})
 
-/* Get bookings */
-app.get("/bookings", async (req,res)=>{
-try{
-let bookings = await Booking.find()
-res.json(bookings)
-}catch(err){
-console.log(err)
-res.json([])
+/* ================= PRICE ================= */
+const roomPrices = {
+deluxe:3500,
+suite:6000,
+presidential:12000
 }
-})
 
-/* Start server */
-const PORT = process.env.PORT || 5000
+function calculatePrice(){
 
-app.listen(PORT, ()=>{
-console.log("Server running on port", PORT)
-})
-app.get("/contacts", async (req,res)=>{
+let checkin = new Date(document.getElementById("checkin").value)
+let checkout = new Date(document.getElementById("checkout").value)
+let room = document.getElementById("roomType").value
+
+let nights = (checkout - checkin)/(1000*60*60*24)
+
+if(nights <= 0){
+document.getElementById("totalPrice").innerText =
+"Check-out must be after check-in"
+return
+}
+
+let total = nights * roomPrices[room]
+
+document.getElementById("totalPrice").innerText =
+"Total Price: ₹" + total + " for " + nights + " nights"
+
+}
+
+/* ================= BOOK ROOM ================= */
+async function bookRoom(){
+
+let name = document.getElementById("name").value
+let email = document.getElementById("email").value
+let room = document.getElementById("roomType").value
+let checkin = document.getElementById("checkin").value
+let checkout = document.getElementById("checkout").value
+
+if(!name || !email || !checkin || !checkout){
+alert("Fill all fields")
+return
+}
 
 try{
-let contacts = await Contact.find()
-res.json(contacts)
+
+let res = await fetch(API + "/book-room",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({
+name,email,room,checkin,checkout,payment:"Cash"
+})
+})
+
+let data = await res.json()
+
+alert(data.message)
+
 }catch(err){
-console.log(err)
-res.json([])
+alert("Booking failed")
+}
+
+}
+
+/* ================= PAY NOW ================= */
+function payNow(){
+alert("Payment Successful (Demo)")
+}
+
+/* ================= CONTACT ================= */
+
+
+/* ================= GO TO BOOKING ================= */
+function goToBooking(room){
+
+localStorage.setItem("selectedRoom", room)
+window.location.href = "booking.html"
+
+}
+
+/* ================= AUTO SET ROOM ================= */
+document.addEventListener("DOMContentLoaded", function(){
+
+let room = localStorage.getItem("selectedRoom")
+
+let dropdown = document.getElementById("roomType")
+
+if(room && dropdown){
+dropdown.value = room
 }
 
 })
-/* ================= CONTACT SCHEMA ================= */
+// IMAGE ZOOM POPUP
+
+function openImage(src){
+document.getElementById("popupImg").src = src
+document.getElementById("popup").classList.add("active")
+}
+
+function closeImage(){
+document.getElementById("popup").classList.remove("active")
+}
+/* ================= GET CONTACT MESSAGES ================= */
+
+
+async function loadContacts(){
+
+let table = document.getElementById("contactTable")
+if(!table) return
+
+try{
+
+let res = await fetch(API + "/contacts")
+let data = await res.json()
+
+console.log("Contacts:", data) // debug
+
+data.forEach(c=>{
+table.innerHTML += `
+<tr>
+<td>${c.name}</td>
+<td>${c.email}</td>
+<td>${c.phone}</td>
+<td>${c.method}</td>
+<td>${c.message}</td>
+</tr>
+`
+})
+
+}catch(err){
+console.log(err)
+}
+
+}
+
+document.addEventListener("DOMContentLoaded", loadContacts)
+
+/* AUTO LOAD */
+document.addEventListener("DOMContentLoaded", loadContacts)
+
+async function loadBookings(){
+
+let table = document.getElementById("bookingTable")
+if(!table) return
+
+try{
+
+let res = await fetch(API + "/bookings")
+let data = await res.json()
+
+console.log("Bookings:", data) // debug
+
+data.forEach(b=>{
+table.innerHTML += `
+<tr>
+<td>${b.name}</td>
+<td>${b.email}</td>
+<td>${b.room}</td>
+<td>${b.checkin}</td>
+<td>${b.checkout}</td>
+<td>${b.payment}</td>
+</tr>
+`
+})
+
+}catch(err){
+console.log(err)
+}
+}
+
+document.addEventListener("DOMContentLoaded", loadBookings)
 const Contact = mongoose.model("Contact", new mongoose.Schema({
 name:String,
 email:String,
@@ -169,42 +243,41 @@ phone:String,
 method:String,
 message:String
 }))
+async function submitContact(){
 
-/* ================= CONTACT API ================= */
-app.post("/contact", async (req,res)=>{
-try{
-
-const {name,email,phone,method,message} = req.body
+let name = document.getElementById("name").value
+let email = document.getElementById("email").value
+let phone = document.getElementById("phone").value
+let method = document.getElementById("method").value
+let message = document.getElementById("message").value
 
 if(!name || !email || !message){
-return res.json({message:"All fields required"})
+alert("Fill required fields")
+return
 }
 
-await new Contact({
-name,
-email,
-phone,
-method,
-message
-}).save()
+try{
 
-res.json({message:"Message sent successfully"})
-
-}catch(err){
-console.log(err)
-res.json({message:"Error saving message"})
-}
+let res = await fetch(API + "/contact",{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify({
+name,email,phone,method,message
+})
 })
 
-/* ================= GET CONTACTS ================= */
-app.get("/contacts", async (req,res)=>{
-try{
-let contacts = await Contact.find()
-res.json(contacts)
+let data = await res.json()
+
+console.log("CONTACT RESPONSE:", data)
+
+alert(data.message)
+
 }catch(err){
 console.log(err)
-res.json([])
+alert("Error")
 }
-}}
 
+}
 
