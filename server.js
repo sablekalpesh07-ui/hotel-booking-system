@@ -203,6 +203,23 @@ app.get("/bookings", async (req, res) => {
   res.json(await Booking.find())
 })
 
+
+app.get("/test-mail", async (req,res)=>{
+  try{
+    await transporter.sendMail({
+      to: "sablekalpesh07@gmail.com",
+      subject: "Test Mail",
+      text: "Working"
+    })
+    res.send("Mail sent")
+  }catch(err){
+    console.log(err)
+    res.send("Error")
+  }
+})
+
 /* ================= SERVER ================= */
 const PORT = process.env.PORT || 5000
 app.listen(PORT, () => console.log("Server running on", PORT))
+console.log("EMAIL:", process.env.EMAIL_USER)
+console.log("PASS:", process.env.EMAIL_PASS)
