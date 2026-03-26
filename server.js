@@ -1,76 +1,39 @@
+require("dotenv").config()
+
 const express = require("express")
 const mongoose = require("mongoose")
 const cors = require("cors")
 const bcrypt = require("bcryptjs")
 const path = require("path")
 const nodemailer = require("nodemailer")
-require("dotenv").config()
-const otpStore = {} // temporary storage
+
 const app = express()
+const otpStore = {}
 
-/* ================= EMAIL SETUP ================= */
-const transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-   user: process.env.EMAIL_USER,
-   pass: process.env.EMAIL_PASS// App password
-  }
-})
-
-
-app.post("/send-otp", async (req, res) => {
-  try {
-    const { email } = req.body
-
-    const otp = Math.floor(100000 + Math.random() * 900000)
-
-    console.log("Sending OTP to:", email)
-    console.log("Using email:", process.env.EMAIL_USER)
-
-    await transporter.sendMail({
-      from: process.env.EMAIL_USER,
-      to: email,
-      subject: "Your OTP Code",
-      html: `<h2>Your OTP is: ${otp}</h2>`
-    })
-
-    res.json({ message: "OTP sent to email" })
-
-  } catch (err) {
-    console.log("OTP ERROR:", err) // 🔥 THIS WILL SHOW REAL ERROR
-    res.json({ message: "Error sending OTP" })
-  }
-})
-app.post("/verify-otp", (req, res) => {
-  const { email, otp } = req.body
-
-  if (otpStore[email] == otp) {
-    delete otpStore[email]
-    return res.json({ message: "Login Successful" })
-  }
-
-  res.json({ message: "Invalid OTP" })
-})
 /* ================= MIDDLEWARE ================= */
 app.use(cors({ origin: "*" }))
 app.use(express.json())
 
-/* ================= STATIC FILES ================= */
+/* ================= STATIC ================= */
 app.use(express.static(__dirname))
 
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "index.html"))
 })
 
-/* ================= DATABASE ================= */
-mongoose.connect(process.env.MONGO_URI,
-  {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
+/* ================= EMAIL ================= */
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS
   }
-)
-.then(() => console.log("MongoDB Connected"))
-.catch(err => console.log("Mongo Error:", err))
+})
+
+/* ================= DATABASE ================= */
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => console.log("MongoDB Connected"))
+  .catch(err => console.log(err))
 
 /* ================= SCHEMAS ================= */
 const User = mongoose.model("User", new mongoose.Schema({
@@ -96,6 +59,41 @@ const Contact = mongoose.model("Contact", new mongoose.Schema({
   message: String
 }))
 
+/* ================= OTP ================= */
+app.post("/send-otp", async (req, res) => {
+  try {
+    const { email } = req.body
+    if (!email) return res.json({ message: "Email required" })
+
+    const otp = Math.floor(100000 + Math.random() * 900000)
+    otpStore[email] = otp
+
+    await transporter.sendMail({
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: "Your OTP",
+      html: `<h2>Your OTP is: ${otp}</h2>`
+    })
+
+    res.json({ message: "OTP sent to email" })
+
+  } catch (err) {
+    console.log(err)
+    res.json({ message: "Error sending OTP" })
+  }
+})
+
+app.post("/verify-otp", (req, res) => {
+  const { email, otp } = req.body
+
+  if (otpStore[email] == otp) {
+    delete otpStore[email]
+    return res.json({ message: "Login Successful" })
+  }
+
+  res.json({ message: "Invalid OTP" })
+})
+
 /* ================= SIGNUP ================= */
 app.post("/signup", async (req, res) => {
   try {
@@ -111,13 +109,11 @@ app.post("/signup", async (req, res) => {
     }
 
     const hash = await bcrypt.hash(password, 10)
-
     await new User({ name, email, password: hash }).save()
 
     res.json({ message: "User Registered Successfully" })
 
   } catch (err) {
-    console.log(err)
     res.json({ message: "Signup Error" })
   }
 })
@@ -128,39 +124,26 @@ app.post("/login", async (req, res) => {
     const { email, password } = req.body
 
     const user = await User.findOne({ email })
-
-    if (!user) {
-      return res.json({ message: "User not found" })
-    }
+    if (!user) return res.json({ message: "User not found" })
 
     const valid = await bcrypt.compare(password, user.password)
 
     if (valid) {
-
-      /* EMAIL TO USER */
       try {
         await transporter.sendMail({
-          from: "Luxury Hotel <sablekalpesh07@gmail.com>",
-          to: user.email,
-          subject: "Login Alert 🔐",
-          html: `
-            <h2>Welcome back to Luxury Hotel</h2>
-            <p>You have successfully logged in.</p>
-            <p>If this wasn't you, please contact support.</p>
-          `
+          from: process.env.EMAIL_USER,
+          to: email,
+          subject: "Login Alert",
+          html: `<h3>You logged in successfully</h3>`
         })
-      } catch (e) {
-        console.log("Email failed (login)")
-      }
+      } catch {}
 
-      res.json({ message: "Login Successful" })
-
-    } else {
-      res.json({ message: "Invalid Password" })
+      return res.json({ message: "Login Successful" })
     }
 
-  } catch (err) {
-    console.log(err)
+    res.json({ message: "Invalid Password" })
+
+  } catch {
     res.json({ message: "Server error" })
   }
 })
@@ -168,54 +151,27 @@ app.post("/login", async (req, res) => {
 /* ================= BOOK ROOM ================= */
 app.post("/book-room", async (req, res) => {
   try {
-    const { name, email, room, checkin, checkout, payment } = req.body
+    const { name, email, room, checkin, checkout } = req.body
 
     if (!name || !email || !room || !checkin || !checkout) {
       return res.json({ message: "All fields required" })
     }
 
-    /* SAVE BOOKING */
     await new Booking({
-      name, email, room, checkin, checkout, payment
+      name, email, room, checkin, checkout, payment: "Cash"
     }).save()
 
-    /* EMAIL TO USER */
     try {
       await transporter.sendMail({
-        from: "Luxury Hotel <sablekalpesh07@gmail.com>",
         to: email,
-        subject: "Booking Confirmation 🏨",
-        html: `
-          <h2>Booking Confirmed</h2>
-          <p><b>Name:</b> ${name}</p>
-          <p><b>Room:</b> ${room}</p>
-          <p><b>Check-in:</b> ${checkin}</p>
-          <p><b>Check-out:</b> ${checkout}</p>
-          <p><b>Payment:</b> ${payment}</p>
-          <br>
-          <p>Thank you for choosing Luxury Hotel ❤️</p>
-        `
+        subject: "Booking Confirmed",
+        html: `<h3>Your booking is confirmed</h3>`
       })
-    } catch (e) {
-      console.log("User email failed")
-    }
-
-    /* EMAIL TO ADMIN */
-    try {
-      await transporter.sendMail({
-        from: "System",
-        to: "sablekalpesh07@gmail.com",
-        subject: "New Booking Received",
-        text: `New booking from ${name} (${email})`
-      })
-    } catch (e) {
-      console.log("Admin email failed")
-    }
+    } catch {}
 
     res.json({ message: "Room booked successfully" })
 
-  } catch (err) {
-    console.log(err)
+  } catch {
     res.json({ message: "Booking error" })
   }
 })
@@ -233,37 +189,20 @@ app.post("/contact", async (req, res) => {
 
     res.json({ message: "Message sent successfully" })
 
-  } catch (err) {
-    console.log(err)
+  } catch {
     res.json({ message: "Error saving message" })
   }
 })
 
-/* ================= GET CONTACTS ================= */
+/* ================= DATA ================= */
 app.get("/contacts", async (req, res) => {
-  try {
-    let contacts = await Contact.find()
-    res.json(contacts)
-  } catch (err) {
-    console.log(err)
-    res.json([])
-  }
+  res.json(await Contact.find())
 })
 
-/* ================= GET BOOKINGS ================= */
 app.get("/bookings", async (req, res) => {
-  try {
-    let bookings = await Booking.find()
-    res.json(bookings)
-  } catch (err) {
-    console.log(err)
-    res.json([])
-  }
+  res.json(await Booking.find())
 })
 
 /* ================= SERVER ================= */
 const PORT = process.env.PORT || 5000
-
-app.listen(PORT, () => {
-  console.log("Server running on port", PORT)
-})
+app.listen(PORT, () => console.log("Server running on", PORT))
