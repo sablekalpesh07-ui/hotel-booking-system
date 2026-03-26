@@ -97,4 +97,26 @@ async function submitContact(){
   alert(data.message)
 }
 
+function calculatePrice(){
+  let checkin = new Date(document.getElementById("checkin").value)
+  let checkout = new Date(document.getElementById("checkout").value)
+  let room = document.getElementById("roomType").value
 
+  let nights = (checkout - checkin)/(1000*60*60*24)
+
+  if(nights <= 0){
+    document.getElementById("totalPrice").innerText =
+    "Check-out must be after check-in"
+    return
+  }
+
+  let total = nights * roomPrices[room]
+
+  document.getElementById("totalPrice").innerText =
+  "Total Price: ₹" + total
+}
+
+/* PAY NOW */
+function payNow(){
+  alert("Payment Successful ✅")
+}
