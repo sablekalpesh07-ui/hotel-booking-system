@@ -110,6 +110,9 @@ app.post("/book-room", async (req, res) => {
     res.json({ message: "Booking error" })
   }
 })
+app.get("/bookings", async (req, res) => {
+  res.json(await Booking.find())
+})
 
 /* ================= CONTACT ================= */
 app.post("/contact", async (req, res) => {
@@ -126,6 +129,14 @@ app.post("/contact", async (req, res) => {
 
   } catch {
     res.json({ message: "Error saving message" })
+  }
+})
+app.get("/contacts", async (req, res) => {
+  try {
+    let contacts = await Contact.find()
+    res.json(contacts)
+  } catch {
+    res.json([])
   }
 })
 
