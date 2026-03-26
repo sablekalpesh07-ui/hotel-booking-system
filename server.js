@@ -36,6 +36,44 @@ useUnifiedTopology: true
 )
 .then(()=>console.log("MongoDB Connected"))
 .catch(err=>console.log("Mongo Error:", err))
+/* ================= CONTACT SCHEMA ================= */
+const Contact = mongoose.model("Contact", new mongoose.Schema({
+name:String,
+email:String,
+phone:String,
+method:String,
+message:String
+}))
+
+/* ================= CONTACT API ================= */
+app.post("/contact", async (req,res)=>{
+try{
+const {name,email,phone,method,message} = req.body
+
+if(!name || !email || !message){
+return res.json({message:"All fields required"})
+}
+
+await new Contact({name,email,phone,method,message}).save()
+
+res.json({message:"Message sent successfully"})
+
+}catch(err){
+console.log(err)
+res.json({message:"Error saving message"})
+}
+})
+
+/* ================= GET CONTACTS ================= */
+app.get("/contacts", async (req,res)=>{
+try{
+let contacts = await Contact.find()
+res.json(contacts)
+}catch(err){
+console.log(err)
+res.json([])
+}
+})
 
 /* Schemas */
 const User = mongoose.model("User", new mongoose.Schema({
@@ -161,50 +199,5 @@ res.json([])
 }
 
 })
-/* ================= CONTACT SCHEMA ================= */
-const Contact = mongoose.model("Contact", new mongoose.Schema({
-name:String,
-email:String,
-phone:String,
-method:String,
-message:String
-}))
-
-/* ================= CONTACT API ================= */
-app.post("/contact", async (req,res)=>{
-try{
-
-const {name,email,phone,method,message} = req.body
-
-if(!name || !email || !message){
-return res.json({message:"All fields required"})
-}
-
-await new Contact({
-name,
-email,
-phone,
-method,
-message
-}).save()
-
-res.json({message:"Message sent successfully"})
-
-}catch(err){
-console.log(err)
-res.json({message:"Error saving message"})
-}
-})
-
-/* ================= GET CONTACTS ================= */
-app.get("/contacts", async (req,res)=>{
-try{
-let contacts = await Contact.find()
-res.json(contacts)
-}catch(err){
-console.log(err)
-res.json([])
-}
-}}
 
 
