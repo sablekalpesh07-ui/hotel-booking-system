@@ -4,18 +4,57 @@ const cors = require("cors")
 const bcrypt = require("bcryptjs")
 const path = require("path")
 const nodemailer = require("nodemailer")
-
+require("dotenv").config()
+const otpStore = {} // temporary storage
 const app = express()
 
 /* ================= EMAIL SETUP ================= */
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
-    user: "sablekalpesh07@gmail.com",
-    pass: "apei tuan tsyw xdmd" // App password
+   user: process.env.EMAIL_USER,
+   pass: process.env.EMAIL_PASS// App password
   }
 })
 
+
+app.post("/send-otp", async (req, res) => {
+  try {
+    const { email } = req.body
+
+    if (!email) {
+      return res.json({ message: "Email required" })
+    }
+
+    const otp = Math.floor(100000 + Math.random() * 900000)
+
+    otpStore[email] = otp
+
+    await transporter.sendMail({
+      from: "Luxury Hotel",
+      to: email,
+      subject: "Your OTP Code",
+      html: `<h2>Your OTP is: ${otp}</h2>`
+    })
+
+    res.json({ message: "OTP sent to email" })
+
+  } catch (err) {
+    console.log(err)
+    res.json({ message: "Error sending OTP" })
+  }
+})
+
+app.post("/verify-otp", (req, res) => {
+  const { email, otp } = req.body
+
+  if (otpStore[email] == otp) {
+    delete otpStore[email]
+    return res.json({ message: "Login Successful" })
+  }
+
+  res.json({ message: "Invalid OTP" })
+})
 /* ================= MIDDLEWARE ================= */
 app.use(cors({ origin: "*" }))
 app.use(express.json())
@@ -28,8 +67,7 @@ app.get("/", (req, res) => {
 })
 
 /* ================= DATABASE ================= */
-mongoose.connect(
-  "mongodb+srv://sablekalpesh07_db_user:o1jyzlCqAIMiq9mj@cluster0.nlntkfe.mongodb.net/hotelDB?retryWrites=true&w=majority",
+mongoose.connect(process.env.MONGO_URI,
   {
     useNewUrlParser: true,
     useUnifiedTopology: true
