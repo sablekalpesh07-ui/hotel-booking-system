@@ -31,45 +31,72 @@ async function signup(){
   alert(data.message)
 }
 
-/* OTP */
-async function sendOTP(){
-  let email = document.getElementById("email").value
-
-  let res = await fetch(API+"/send-otp",{
-    method:"POST",
-    headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({email})
-  })
-
-  let data = await res.json()
-  alert(data.message)
+/* BOOK NOW REDIRECT */
+function goToBooking(room){
+  localStorage.setItem("selectedRoom", room)
+  window.location.href = "booking.html"
 }
 
-async function verifyOTP(){
-  let email = document.getElementById("email").value
-  let otp = document.getElementById("otp").value
+/* AUTO SELECT ROOM */
+document.addEventListener("DOMContentLoaded", function(){
+  let room = localStorage.getItem("selectedRoom")
+  let dropdown = document.getElementById("roomType")
 
-  let res = await fetch(API+"/verify-otp",{
-    method:"POST",
-    headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({email,otp})
-  })
-
-  let data = await res.json()
-  alert(data.message)
-
-  if(data.message==="Login Successful"){
-    window.location.href="index.html"
+  if(room && dropdown){
+    dropdown.value = room
   }
+})
+
+/* PRICE CALCULATION */
+const roomPrices = {
+  deluxe: 3500,
+  suite: 6000,
+  presidential: 12000
 }
 
-/* BOOK */
+function calculatePrice(){
+  let checkin = document.getElementById("checkin").value
+  let checkout = document.getElementById("checkout").value
+  let room = document.getElementById("roomType").value
+
+  if(!checkin || !checkout){
+    alert("Select dates first")
+    return
+  }
+
+  let d1 = new Date(checkin)
+  let d2 = new Date(checkout)
+
+  let nights = (d2 - d1)/(1000*60*60*24)
+
+  if(nights <= 0){
+    document.getElementById("totalPrice").innerText = "Invalid dates"
+    return
+  }
+
+  let total = nights * roomPrices[room]
+
+  document.getElementById("totalPrice").innerText =
+  "Total Price: ₹" + total
+}
+
+/* PAY */
+function payNow(){
+  alert("Payment Successful ✅")
+}
+
+/* BOOK ROOM */
 async function bookRoom(){
   let name = document.getElementById("name").value
   let email = document.getElementById("email").value
   let room = document.getElementById("roomType").value
   let checkin = document.getElementById("checkin").value
   let checkout = document.getElementById("checkout").value
+
+  if(!name || !email || !checkin || !checkout){
+    alert("Fill all fields")
+    return
+  }
 
   let res = await fetch(API+"/book-room",{
     method:"POST",
@@ -95,28 +122,4 @@ async function submitContact(){
 
   let data = await res.json()
   alert(data.message)
-}
-
-function calculatePrice(){
-  let checkin = new Date(document.getElementById("checkin").value)
-  let checkout = new Date(document.getElementById("checkout").value)
-  let room = document.getElementById("roomType").value
-
-  let nights = (checkout - checkin)/(1000*60*60*24)
-
-  if(nights <= 0){
-    document.getElementById("totalPrice").innerText =
-    "Check-out must be after check-in"
-    return
-  }
-
-  let total = nights * roomPrices[room]
-
-  document.getElementById("totalPrice").innerText =
-  "Total Price: ₹" + total
-}
-
-/* PAY NOW */
-function payNow(){
-  alert("Payment Successful ✅")
 }
