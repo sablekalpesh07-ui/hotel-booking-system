@@ -205,7 +205,6 @@ res.json(contacts)
 console.log(err)
 res.json([])
 }
-})
-
+}}
 
 
