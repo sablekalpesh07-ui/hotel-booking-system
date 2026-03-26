@@ -1,5 +1,6 @@
 const API = "https://hotel-booking-system-8xru.onrender.com"
 
+
 /* ================= LOGIN ================= */
 async function login(){
 
@@ -95,6 +96,35 @@ document.getElementById("totalPrice").innerText =
 
 }
 
+async function sendOTP(){
+  let email = document.getElementById("email").value
+
+  let res = await fetch(API + "/send-otp",{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({email})
+  })
+
+  let data = await res.json()
+  alert(data.message)
+}
+async function verifyOTP(){
+  let email = document.getElementById("email").value
+  let otp = document.getElementById("otp").value
+
+  let res = await fetch(API + "/verify-otp",{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({email,otp})
+  })
+
+  let data = await res.json()
+  alert(data.message)
+
+  if(data.message === "Login Successful"){
+    window.location.href = "index.html"
+  }
+}
 /* ================= BOOK ROOM ================= */
 async function bookRoom(){
 
