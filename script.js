@@ -12,7 +12,12 @@ async function login(){
   })
 
   let data = await res.json()
+
   alert(data.message)
+
+  if(data.message === "Login Successful"){
+    window.location.href = "index.html"   // ✅ redirect to home
+  }
 }
 
 /* SIGNUP */
@@ -123,3 +128,54 @@ async function submitContact(){
   let data = await res.json()
   alert(data.message)
 }
+/* LOAD BOOKINGS */
+async function loadBookings(){
+
+  let table = document.getElementById("bookingTable")
+  if(!table) return
+
+  let res = await fetch(API + "/bookings")
+  let data = await res.json()
+
+  table.innerHTML = ""
+
+  data.forEach(b=>{
+    table.innerHTML += `
+    <tr>
+      <td>${b.name}</td>
+      <td>${b.email}</td>
+      <td>${b.room}</td>
+      <td>${b.checkin}</td>
+      <td>${b.checkout}</td>
+    </tr>
+    `
+  })
+}
+
+/* LOAD CONTACTS */
+async function loadContacts(){
+
+  let table = document.getElementById("contactTable")
+  if(!table) return
+
+  let res = await fetch(API + "/contacts")
+  let data = await res.json()
+
+  table.innerHTML = ""
+
+  data.forEach(c=>{
+    table.innerHTML += `
+    <tr>
+      <td>${c.name}</td>
+      <td>${c.email}</td>
+      <td>${c.message}</td>
+    </tr>
+    `
+  })
+}
+
+/* AUTO LOAD */
+document.addEventListener("DOMContentLoaded", function(){
+  loadBookings()
+  loadContacts()
+})
